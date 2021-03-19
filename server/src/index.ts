@@ -10,9 +10,14 @@ import { verify } from "jsonwebtoken";
 import { User } from "./entity/User";
 import { craeteAccessToken, craeteRefreshToken } from "./auth";
 import { sendRefreshToken } from "./sendRefreshToken";
+import cors from 'cors'
 
 createConnection().then(async () => {
     const app = express()
+    app.use(cors({
+        credentials: true,
+        origin:'http://localhost:3000'
+    }))
     app.use(cookieParser())
     app.get('/', (_req, res) => res.send('hello'))
     app.post('/refresh_token', async (req, res) => {
@@ -51,7 +56,7 @@ createConnection().then(async () => {
         }),
         context: ({ req, res }) => ({ req, res })
     })
-    apolloServer.applyMiddleware({ app })
+    apolloServer.applyMiddleware({ app, cors: false })
     app.listen(4000, () => {
         console.log('express server connected');
 

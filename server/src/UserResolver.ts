@@ -6,6 +6,7 @@ import { User } from './entity/User'
 import { isAuth } from './isAuth'
 import { sendRefreshToken } from './sendRefreshToken'
 import { getConnection } from 'typeorm'
+import { verify } from 'jsonwebtoken'
 
 
 @ObjectType()
@@ -31,6 +32,27 @@ export class UserResolver {
     @Query(() => [User])
     users() {
         return User.find()
+    }
+
+    @Query(() => User, { nullable: true })
+    me(@Ctx() context: MyContext) {
+        // 1. grabing the data in headers sent from frontend
+        const authorization = context.req.headers['authorization']
+        if (!authorization) {
+            return null
+        }
+
+        try {
+            // 2. bringing out the token from Headers
+            const token = authorization.split(' ')[1]
+            // 3. verifying the acces token with jwt verify method
+            const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!)
+            return User.findOne(payload.userId)
+
+        } catch (err) {
+            console.log(err);
+            return null
+        }
     }
 
     @Mutation(() => Boolean)

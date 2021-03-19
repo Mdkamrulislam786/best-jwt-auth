@@ -3,7 +3,7 @@ import { User } from "./entity/User";
 
 
 export const craeteAccessToken = (user: User) => {
-    return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: '15m' })
+    return sign({ userId: user.id }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: '10s' })
 }
 
 export const craeteRefreshToken = (user: User) => {
