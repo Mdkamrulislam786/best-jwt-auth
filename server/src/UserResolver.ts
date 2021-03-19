@@ -13,6 +13,9 @@ import { verify } from 'jsonwebtoken'
 class LoginResponse {
     @Field()
     accecssToken: string
+    @Field(()=> User)
+    user: User
+
 }
 
 @Resolver()
@@ -81,7 +84,8 @@ export class UserResolver {
         //make cookie, put diff secret instead of acccessToken
         sendRefreshToken(res, craeteRefreshToken(user))
         return {
-            accecssToken: craeteAccessToken(user)
+            accecssToken: craeteAccessToken(user),
+            user
         }
     }
 
@@ -103,6 +107,12 @@ export class UserResolver {
         }
 
         return true;
+    }
+
+    @Mutation(() => Boolean)
+    async logout(@Ctx() { res }: MyContext) {
+        sendRefreshToken(res, "")
+        return true
     }
 
 }

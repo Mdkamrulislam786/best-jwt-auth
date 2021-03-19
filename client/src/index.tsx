@@ -6,10 +6,7 @@ import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache, from, Observab
 import { getAccessToken, setAccessToken } from './accessToken';
 import { TokenRefreshLink } from 'apollo-link-token-refresh';
 import jwtDecode from 'jwt-decode';
-import { onError  } from 'apollo-link-error';
-// import { ApolloLink, Observable } from "apollo-link";
-import { AnyNaptrRecord } from 'node:dns';
-import { HttpLink } from "apollo-link-http";
+import { onError } from 'apollo-link-error';
 
 const cache = new InMemoryCache({});
 const httplink = createHttpLink({
@@ -69,6 +66,7 @@ const client = new ApolloClient({
           return false;
         }
       },
+      //if token isnt valid we send rq for getting new accesstoken every 15min
       fetchAccessToken: () => {
         return fetch("http://localhost:4000/refresh_token", {
           method: "POST",
@@ -84,7 +82,7 @@ const client = new ApolloClient({
       }
     }),
     requestLink,
-   httplink,
+    httplink,
   ]),
   cache
 });

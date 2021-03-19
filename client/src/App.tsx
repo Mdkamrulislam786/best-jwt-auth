@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { setAccessToken } from './accessToken';
 import './App.css';
-import { useHelloQuery } from './generated/graphql';
 import Routes from './Routes';
 
 const App: React.FC = () => {

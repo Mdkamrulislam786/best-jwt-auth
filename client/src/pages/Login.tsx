@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom';
 import { setAccessToken } from '../accessToken';
-import { useLoginMutation } from '../generated/graphql';
+import { useLoginMutation, MeQuery, MeDocument } from '../generated/graphql';
 
 
 
@@ -10,23 +10,34 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
     const [password, setPassword] = useState("");
     const [login] = useLoginMutation()
 
-    const submitForm: any = async (event: any) => {
-        event.preventDefault()
-        console.log('formsubmited');
-        console.log(email, password);
-        const res = await login({
+    const submitForm: any = async (e: any) => {
+        e.preventDefault();
+        console.log("form submitted");
+        const response = await login({
             variables: {
                 email,
                 password
+            },
+            update: (store, { data }) => {
+                if (!data) {
+                    return null;
+                }
+
+                store.writeQuery<MeQuery>({
+                    query: MeDocument,
+                    data: {
+                        me: data.login.user
+                    }
+                });
             }
-        })
-        if (res && res.data) {
-            setAccessToken(res.data.login.accecssToken)
+        });
+
+        console.log(response);
+
+        if (response && response.data) {
+            setAccessToken(response.data.login.accecssToken);
         }
-        setEmail('')
-        setPassword('')
-        history.push('/')
-        console.log('res', res);
+        history.push("/");
     }
 
     return (
